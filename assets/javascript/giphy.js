@@ -1,23 +1,66 @@
-$(document).ready(function() {
+alert("ALLGOOD");
+//Variables Global
 
-    $(".filter-button").click(function() {
-        var value = $(this).attr('data-filter');
+var warTools = ["soldiers", "bullets", "bayonets"]
 
-        if (value == "all") {
-            //$('.filter').removeClass('hidden');
-            $('.filter').show('1000');
-        } else {
-            //            $('.filter[filter-item="'+value+'"]').removeClass('hidden');
-            //            $(".filter").not('.filter[filter-item="'+value+'"]').addClass('hidden');
-            $(".filter").not('.' + value).hide('3000');
-            $('.filter').filter('.' + value).show('3000');
 
+
+
+
+//Functions
+function apiCall(tool) {
+    var apiKey = "wfEj5TPfgyQGmN4vyp0SLittPQ9wwxny";
+    var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=" + apiKey + "&q=" + tool + "&limit=10";
+    console.log(queryURL)
+    $.ajax({
+        url: queryURL,
+        method: "GET"
+    }).then(function(response) {
+        $("#gifs").empty();
+        for (var i = 0; i < response.data.length; i++) {
+            var img = $("<img>")
+                // console.log(response.data[i].images.fixed_width.url);
+            img.attr("src", response.data[i].images.fixed_width.url)
+            $("#gifs").append(img);
         }
     });
+}
 
-    if ($(".filter-button").removeClass("active")) {
-        $(this).removeClass("active");
+function renderButtons() {
+    $("#buttons").empty();
+    for (var i = 0; i < warTools.length; i++) {
+        var b = $("<button>");
+        b.attr("type", "button");
+        b.addClass("btn btn-outline-light btn-api");
+        b.text(warTools[i]);
+        $("#buttons").append(b);
     }
-    $(this).addClass("active");
+}
 
-});
+
+//Event listerers for buttons
+$(document).on("click", ".btn-api", function() {
+    var tool = ($(this)).text();
+    apiCall(tool)
+        // console.log("clicked");
+})
+
+$("#search").on("click", function() {
+    var newB = ($("#input")).val();
+    // console.log($("#input").val());
+    warTools.push(newB);
+    renderButtons();
+    // apiCall(tool)
+
+})
+
+
+
+
+
+
+
+
+
+
+renderButtons();
